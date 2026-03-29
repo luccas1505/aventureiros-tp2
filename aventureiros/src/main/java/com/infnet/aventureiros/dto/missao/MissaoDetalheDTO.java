@@ -6,9 +6,7 @@ import com.infnet.aventureiros.entity.aventura.StatusMissao;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-/**
- * Detalhamento completo de uma missão com seus participantes.
- */
+
 public record MissaoDetalheDTO(
     Long id,
     String titulo,

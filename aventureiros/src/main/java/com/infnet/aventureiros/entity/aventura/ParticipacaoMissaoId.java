@@ -9,12 +9,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-/**
- * Chave composta para ParticipacaoMissao.
- *
- * Garante unicidade do par (missao_id, aventureiro_id) no banco,
- * impedindo que um aventureiro participe mais de uma vez da mesma missão.
- */
+
 @Embeddable
 @Getter
 @Setter

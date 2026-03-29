@@ -1,8 +1,4 @@
--- ============================================================
--- Schema aventura — criação das tabelas do domínio de aventura
--- Execute este script UMA VEZ no banco Docker antes de rodar
--- a aplicação com ddl-auto=validate
--- ============================================================
+
 
 CREATE SCHEMA IF NOT EXISTS aventura;
 
@@ -20,7 +16,6 @@ CREATE TABLE IF NOT EXISTS aventura.aventureiros (
     CONSTRAINT uq_aventureiro_org_nome UNIQUE (organizacao_id, nome)
 );
 
--- Companheiros (1:1 com aventureiros — PK = FK)
 CREATE TABLE IF NOT EXISTS aventura.companheiros (
     aventureiro_id  BIGINT PRIMARY KEY REFERENCES aventura.aventureiros(id) ON DELETE CASCADE,
     nome            VARCHAR(120) NOT NULL,
@@ -28,7 +23,6 @@ CREATE TABLE IF NOT EXISTS aventura.companheiros (
     indice_lealdade INTEGER      NOT NULL DEFAULT 50 CHECK (indice_lealdade BETWEEN 0 AND 100)
 );
 
--- Missões
 CREATE TABLE IF NOT EXISTS aventura.missoes (
     id              BIGSERIAL PRIMARY KEY,
     organizacao_id  BIGINT      NOT NULL REFERENCES audit.organizacoes(id),
@@ -40,7 +34,6 @@ CREATE TABLE IF NOT EXISTS aventura.missoes (
     data_termino    TIMESTAMPTZ
 );
 
--- Participações em missão (chave composta)
 CREATE TABLE IF NOT EXISTS aventura.participacoes_missao (
     missao_id       BIGINT      NOT NULL REFERENCES aventura.missoes(id) ON DELETE CASCADE,
     aventureiro_id  BIGINT      NOT NULL REFERENCES aventura.aventureiros(id) ON DELETE CASCADE,
@@ -51,7 +44,6 @@ CREATE TABLE IF NOT EXISTS aventura.participacoes_missao (
     PRIMARY KEY (missao_id, aventureiro_id)
 );
 
--- Índices úteis
 CREATE INDEX IF NOT EXISTS idx_aventureiros_org   ON aventura.aventureiros(organizacao_id);
 CREATE INDEX IF NOT EXISTS idx_missoes_org         ON aventura.missoes(organizacao_id);
 CREATE INDEX IF NOT EXISTS idx_participacoes_missao ON aventura.participacoes_missao(missao_id);

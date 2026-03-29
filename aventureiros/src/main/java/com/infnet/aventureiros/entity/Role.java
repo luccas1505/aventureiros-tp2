@@ -9,16 +9,7 @@ import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Mapeia a tabela audit.roles.
- *
- * Regras do banco legado:
- *  - PK: BIGINT id
- *  - FK: organizacao_id → audit.organizacoes(id)
- *  - UK composta: (organizacao_id, nome)
- *  - Relacionamento N:N com audit.permissions via tabela de junção
- *  - Relacionamento N:N com audit.usuarios (lado inverso)
- */
+
 @Entity
 @Table(
     name = "roles",
@@ -53,14 +44,7 @@ public class Role {
             columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime createdAt;
 
-    // ----------------------------------------------------------------
-    // Relacionamento N:N com Permission
-    // ----------------------------------------------------------------
 
-    /**
-     * Relacionamento muitos-para-muitos com permissões.
-     * Tabela de junção: audit.role_permissions
-     */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "role_permissions",
@@ -76,20 +60,10 @@ public class Role {
     )
     private Set<Permission> permissions = new HashSet<>();
 
-    // ----------------------------------------------------------------
-    // Lado inverso do N:N com Usuario
-    // ----------------------------------------------------------------
 
-    /**
-     * mappedBy indica que Usuario é o lado proprietário
-     * (dono da tabela de junção usuario_roles).
-     */
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Set<Usuario> usuarios = new HashSet<>();
 
-    // ----------------------------------------------------------------
-    // Helpers
-    // ----------------------------------------------------------------
 
     public void addPermission(Permission permission) {
         this.permissions.add(permission);
@@ -99,9 +73,6 @@ public class Role {
         this.permissions.remove(permission);
     }
 
-    // ----------------------------------------------------------------
-    // Lifecycle
-    // ----------------------------------------------------------------
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {

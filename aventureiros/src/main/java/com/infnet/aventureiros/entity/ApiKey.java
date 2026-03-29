@@ -7,17 +7,6 @@ import lombok.Setter;
 
 import java.time.OffsetDateTime;
 
-/**
- * Mapeia a tabela audit.api_keys.
- *
- * Regras do banco legado:
- *  - PK: BIGINT id
- *  - FK: organizacao_id → audit.organizacoes(id)
- *  - UK composta: (organizacao_id, nome)
- *  - key_hash: VARCHAR — hash da chave real (nunca texto claro)
- *  - ativo: BOOLEAN
- *  - last_used_at: TIMESTAMPTZ (nullable)
- */
 @Entity
 @Table(
     name = "api_keys",
@@ -45,7 +34,6 @@ public class ApiKey {
     @Column(name = "nome", nullable = false, length = 255)
     private String nome;
 
-    /** Hash da API key — nunca armazenar a chave em texto claro. */
     @Column(name = "key_hash", nullable = false, length = 255)
     private String keyHash;
 
@@ -56,13 +44,10 @@ public class ApiKey {
             columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime createdAt;
 
-    /** Última vez que a chave foi utilizada — pode ser nulo. */
     @Column(name = "last_used_at", columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime lastUsedAt;
 
-    // ----------------------------------------------------------------
-    // Lifecycle
-    // ----------------------------------------------------------------
+
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {

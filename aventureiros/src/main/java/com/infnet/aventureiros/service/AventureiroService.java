@@ -24,7 +24,6 @@ public class AventureiroService {
     private final AventureiroRepository aventureiroRepo;
     private final ParticipacaoMissaoRepository participacaoRepo;
 
-    /** Listagem com filtros, paginação e ordenação. */
     public Page<AventureiroResumoDTO> listar(AventureiroFiltroDTO filtro, Pageable pageable) {
         return aventureiroRepo.listarComFiltros(
             filtro.getOrganizacaoId(),
@@ -35,17 +34,14 @@ public class AventureiroService {
         );
     }
 
-    /** Busca parcial por nome. */
     public Page<AventureiroResumoDTO> buscarPorNome(Long orgId, String nome, Pageable pageable) {
         return aventureiroRepo.buscarPorNome(orgId, nome, pageable);
     }
 
-    /** Perfil completo com companheiro, total de participações e última missão. */
     public AventureiroDetalheDTO detalhe(Long id) {
         Aventureiro av = aventureiroRepo.findByIdWithCompanheiro(id)
             .orElseThrow(() -> new NoSuchElementException("Aventureiro não encontrado: " + id));
 
-        // Companheiro (pode ser null)
         CompanheiroDTO companheiroDTO = null;
         Companheiro comp = av.getCompanheiro();
         if (comp != null) {
@@ -53,10 +49,8 @@ public class AventureiroService {
                 comp.getNome(), comp.getEspecie(), comp.getIndiceLealdade());
         }
 
-        // Total de participações
         Long total = aventureiroRepo.countParticipacoes(id);
 
-        // Última missão
         String ultimaTitulo = null;
         java.time.OffsetDateTime ultimaData = null;
         List<ParticipacaoMissao> ultima =

@@ -28,7 +28,7 @@ public interface MissaoRepository extends JpaRepository<Missao, Long>,
         SELECT new com.infnet.aventureiros.dto.relatorio.RelatorioMissaoDTO(
             m.id, m.titulo, m.status, m.nivelPerigo,
             COUNT(p.aventureiro),
-            COALESCE(SUM(p.recompensaOuro), 0))
+            COALESCE(SUM(p.recompensaOuro), 0.0))
         FROM Missao m
         LEFT JOIN m.participacoes p
         WHERE m.organizacao.id = :orgId
@@ -37,8 +37,8 @@ public interface MissaoRepository extends JpaRepository<Missao, Long>,
         GROUP BY m.id, m.titulo, m.status, m.nivelPerigo
         """)
     List<RelatorioMissaoDTO> relatorioMissoes(
-        @Param("orgId") Long orgId,
-        @Param("dataInicio") OffsetDateTime dataInicio,
-        @Param("dataFim") OffsetDateTime dataFim
+            @Param("orgId") Long orgId,
+            @Param("dataInicio") OffsetDateTime dataInicio,
+            @Param("dataFim") OffsetDateTime dataFim
     );
 }

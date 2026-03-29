@@ -5,14 +5,19 @@ import com.infnet.aventureiros.entity.aventura.StatusMissao;
 
 import java.math.BigDecimal;
 
-/**
- * Relatório gerencial de missões com métricas agregadas.
- */
 public record RelatorioMissaoDTO(
-    Long missaoId,
-    String titulo,
-    StatusMissao status,
-    NivelPerigo nivelPerigo,
-    Long totalParticipantes,
-    BigDecimal totalRecompensas
-) {}
+        Long missaoId,
+        String titulo,
+        StatusMissao status,
+        NivelPerigo nivelPerigo,
+        Long totalParticipantes,
+        BigDecimal totalRecompensas
+) {
+    public RelatorioMissaoDTO(Long missaoId, String titulo, StatusMissao status,
+                              NivelPerigo nivelPerigo, Long totalParticipantes,
+                              Number totalRecompensas) {
+        this(missaoId, titulo, status, nivelPerigo, totalParticipantes,
+                totalRecompensas == null ? BigDecimal.ZERO
+                        : new BigDecimal(totalRecompensas.toString()));
+    }
+}

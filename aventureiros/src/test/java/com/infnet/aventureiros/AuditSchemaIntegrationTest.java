@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.properties")
-// Necessário para usar o PostgreSQL real em vez do H2 embutido do @DataJpaTest
 @org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase(
         replace = org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE
 )
@@ -52,15 +51,12 @@ class AuditSchemaIntegrationTest {
     @Autowired
     private ApiKeyRepository apiKeyRepo;
 
-    // IDs compartilhados entre testes (banco persiste entre @Test dentro da mesma transação)
     private static Long orgId;
     private static Long userId;
     private static Long roleId;
     private static Long permId;
 
-    // ================================================================
-    // Teste 1: Persistir organização
-    // ================================================================
+    // Teste 1:
     @Test
     @Order(1)
     @DisplayName("Deve persistir uma nova Organização no schema audit")
@@ -80,9 +76,7 @@ class AuditSchemaIntegrationTest {
         System.out.println("✅ Organização persistida: " + salva);
     }
 
-    // ================================================================
-    // Teste 2: Persistir Permission e Role, associar permissão ao role
-    // ================================================================
+    // Teste 2
     @Test
     @Order(2)
     @DisplayName("Deve persistir Role com Permissions e vinculá-los corretamente")
@@ -93,7 +87,6 @@ class AuditSchemaIntegrationTest {
         org.setAtivo(true);
         org = organizacaoRepo.save(org);
 
-        // Cria permissões
         Permission pRead = new Permission();
         pRead.setCode("AVENTUREIRO_READ_" + System.currentTimeMillis());
         pRead.setDescricao("Pode ler aventureiros");
@@ -114,9 +107,8 @@ class AuditSchemaIntegrationTest {
         role = roleRepo.save(role);
 
         em.flush();
-        em.clear(); // garante que próxima leitura vai ao banco
+        em.clear();
 
-        // Recarrega e verifica
         Optional<Role> recarregado = roleRepo.findByIdWithPermissions(role.getId());
         assertThat(recarregado).isPresent();
         assertThat(recarregado.get().getPermissions()).hasSize(2);
@@ -131,9 +123,7 @@ class AuditSchemaIntegrationTest {
                 recarregado.get().getPermissions().size() + " permissões");
     }
 
-    // ================================================================
-    // Teste 3: Persistir Usuário associado a uma Organização
-    // ================================================================
+    // Teste 3:
     @Test
     @Order(3)
     @DisplayName("Deve persistir Usuário associado a uma Organização existente")
@@ -144,7 +134,6 @@ class AuditSchemaIntegrationTest {
         org.setAtivo(true);
         org = organizacaoRepo.save(org);
 
-        // Cria usuário
         Usuario usuario = new Usuario();
         usuario.setOrganizacao(org);
         usuario.setNome("Thorin Escudodecarvão");
@@ -163,28 +152,23 @@ class AuditSchemaIntegrationTest {
         System.out.println("✅ Usuário persistido: " + salvo);
     }
 
-    // ================================================================
-    // Teste 4: Vincular Usuário a um Role e carregar o relacionamento
-    // ================================================================
+    // Teste 4
     @Test
     @Order(4)
     @DisplayName("Deve vincular Usuário a Role e carregar o relacionamento N:N")
     void deveVincularUsuarioARole() {
         long ts = System.currentTimeMillis();
 
-        // Organização
         Organizacao org = new Organizacao();
         org.setNome("Guilda Vincular " + ts);
         org.setAtivo(true);
         org = organizacaoRepo.save(org);
 
-        // Permissão
         Permission perm = new Permission();
         perm.setCode("GUILD_READ_" + ts);
         perm.setDescricao("Lê dados da guilda");
         perm = permissionRepo.save(perm);
 
-        // Role com permissão
         Role role = new Role();
         role.setOrganizacao(org);
         role.setNome("MEMBRO_" + ts);
@@ -204,7 +188,6 @@ class AuditSchemaIntegrationTest {
         em.flush();
         em.clear();
 
-        // Recarrega usuário com roles e permissões
         Optional<Usuario> recarregado =
                 usuarioRepo.findByIdWithRolesAndPermissions(usuario.getId());
 
@@ -225,9 +208,7 @@ class AuditSchemaIntegrationTest {
                                                     .iterator().next().getCode());
     }
 
-    // ================================================================
-    // Teste 5: Listar usuários de uma organização com seus roles
-    // ================================================================
+    // Teste 5
     @Test
     @Order(5)
     @DisplayName("Deve listar usuários de uma organização com seus respectivos roles")
@@ -249,7 +230,6 @@ class AuditSchemaIntegrationTest {
         membro.setNome("MEMBRO_LIST_" + ts);
         membro = roleRepo.save(membro);
 
-        // Usuário 1 — ADMIN
         Usuario u1 = new Usuario();
         u1.setOrganizacao(org);
         u1.setNome("Gandalf");
@@ -259,7 +239,6 @@ class AuditSchemaIntegrationTest {
         u1.addRole(admin);
         usuarioRepo.save(u1);
 
-        // Usuário 2 — MEMBRO
         Usuario u2 = new Usuario();
         u2.setOrganizacao(org);
         u2.setNome("Frodo Bolseiro");
@@ -289,9 +268,7 @@ class AuditSchemaIntegrationTest {
         });
     }
 
-    // ================================================================
-    // Teste 6: Listar roles com suas permissões
-    // ================================================================
+    // Teste 6
     @Test
     @Order(6)
     @DisplayName("Deve listar roles de uma organização com suas permissões acessíveis")

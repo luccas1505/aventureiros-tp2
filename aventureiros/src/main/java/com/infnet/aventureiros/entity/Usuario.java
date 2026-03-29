@@ -9,16 +9,7 @@ import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Mapeia a tabela audit.usuarios.
- *
- * Regras do banco legado:
- *  - PK: BIGINT id
- *  - FK: organizacao_id → audit.organizacoes(id)
- *  - UK composta: (organizacao_id, email)
- *  - status: VARCHAR (ex: "ATIVO", "INATIVO", "PENDENTE")
- *  - Relacionamento N:N com audit.roles via tabela de junção
- */
+
 @Entity
 @Table(
     name = "usuarios",
@@ -39,10 +30,7 @@ public class Usuario {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * FK para organização.
-     * LAZY para evitar N+1 queries desnecessários.
-     */
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizacao_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_usuarios_organizacao"))
@@ -54,17 +42,11 @@ public class Usuario {
     @Column(name = "email", nullable = false, length = 255)
     private String email;
 
-    /**
-     * Hash da senha — NUNCA armazenar a senha em texto claro.
-     * O campo é nomeado senha_hash no banco legado.
-     */
+
     @Column(name = "senha_hash", length = 255)
     private String senhaHash;
 
-    /**
-     * Status do usuário (ex: ATIVO, INATIVO, PENDENTE).
-     * Mapeado como String para não depender de enum específico do legado.
-     */
+
     @Column(name = "status", nullable = false, length = 50)
     private String status;
 
@@ -78,19 +60,6 @@ public class Usuario {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime updatedAt;
 
-    // ----------------------------------------------------------------
-    // Relacionamento N:N com Role via tabela de junção
-    // ----------------------------------------------------------------
-
-    /**
-     * Relacionamento muitos-para-muitos com roles.
-     *
-     * A tabela de junção no banco legado é audit.usuario_roles
-     * (ou nome equivalente) com colunas usuario_id e role_id.
-     *
-     * Usamos Set para evitar duplicatas e melhorar performance
-     * em operações de contains/remove.
-     */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_roles",
@@ -106,25 +75,16 @@ public class Usuario {
     )
     private Set<Role> roles = new HashSet<>();
 
-    // ----------------------------------------------------------------
-    // Helpers
-    // ----------------------------------------------------------------
-
-    /** Adiciona um role garantindo consistência bidirecional. */
     public void addRole(Role role) {
         this.roles.add(role);
         role.getUsuarios().add(this);
     }
 
-    /** Remove um role garantindo consistência bidirecional. */
     public void removeRole(Role role) {
         this.roles.remove(role);
         role.getUsuarios().remove(this);
     }
 
-    // ----------------------------------------------------------------
-    // Lifecycle
-    // ----------------------------------------------------------------
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {

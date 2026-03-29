@@ -5,9 +5,7 @@ import com.infnet.aventureiros.entity.aventura.StatusMissao;
 
 import java.time.OffsetDateTime;
 
-/**
- * Dados resumidos de uma missão para listagens.
- */
+
 public record MissaoResumoDTO(
     Long id,
     String titulo,

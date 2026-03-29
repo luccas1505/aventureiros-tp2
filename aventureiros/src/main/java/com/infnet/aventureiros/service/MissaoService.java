@@ -27,7 +27,6 @@ public class MissaoService {
     private final MissaoRepository missaoRepo;
     private final ParticipacaoMissaoRepository participacaoRepo;
 
-    /** Listagem com filtros dinâmicos via Specification — sem problema de tipo null com enums. */
     public Page<MissaoResumoDTO> listar(MissaoFiltroDTO filtro, Pageable pageable) {
         return missaoRepo.findAll(
             MissaoSpec.comFiltros(
@@ -43,7 +42,6 @@ public class MissaoService {
         ));
     }
 
-    /** Detalhamento completo com participantes — lista vazia se não houver. */
     public MissaoDetalheDTO detalhe(Long id) {
         Missao missao = missaoRepo.findByIdWithParticipacoes(id)
             .orElseThrow(() -> new NoSuchElementException("Missão não encontrada: " + id));

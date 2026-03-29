@@ -8,18 +8,6 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-/**
- * Representa a participação de um Aventureiro em uma Missão.
- *
- * Regras:
- *  - Par (missao, aventureiro) é único — chave composta via @EmbeddedId
- *  - Aventureiro inativo não pode ser associado
- *  - A missão deve estar em estado compatível (PLANEJADA ou EM_ANDAMENTO)
- *  - Aventureiro e missão devem pertencer à mesma organização
- *  - Papel na missão pertence a conjunto fixo (enum PapelMissao)
- *  - Recompensa em ouro >= 0 (opcional)
- *  - MVP (destaque) é obrigatório, padrão false
- */
 @Entity
 @Table(name = "participacoes_missao", schema = "aventura")
 @Getter
@@ -27,10 +15,6 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class ParticipacaoMissao {
 
-    /**
-     * Chave composta (missao_id, aventureiro_id).
-     * Garante unicidade do par no banco sem índice extra.
-     */
     @EmbeddedId
     private ParticipacaoMissaoId id;
 
@@ -46,22 +30,14 @@ public class ParticipacaoMissao {
                 foreignKey = @ForeignKey(name = "fk_participacao_aventureiro"))
     private Aventureiro aventureiro;
 
-    /**
-     * Papel exercido pelo aventureiro nesta missão específica.
-     */
     @Enumerated(EnumType.STRING)
     @Column(name = "papel", nullable = false, length = 30)
     private PapelMissao papel;
 
-    /**
-     * Recompensa em ouro recebida — opcional, mínimo 0.
-     */
     @Column(name = "recompensa_ouro", precision = 10, scale = 2)
     private BigDecimal recompensaOuro;
 
-    /**
-     * Indica se o aventureiro foi destaque (MVP) na missão.
-     */
+
     @Column(name = "mvp", nullable = false)
     private Boolean mvp = false;
 
@@ -69,18 +45,7 @@ public class ParticipacaoMissao {
             columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime createdAt;
 
-    // ----------------------------------------------------------------
-    // Factory method para garantir regras de negócio
-    // ----------------------------------------------------------------
 
-    /**
-     * Cria uma participação já validando as regras de negócio.
-     *
-     * @throws IllegalStateException se o aventureiro estiver inativo
-     *         ou a missão não aceitar novos participantes
-     * @throws IllegalArgumentException se aventureiro e missão forem de
-     *         organizações diferentes
-     */
     public static ParticipacaoMissao criar(Missao missao, Aventureiro aventureiro,
                                            PapelMissao papel) {
         if (!aventureiro.getAtivo()) {
@@ -107,9 +72,6 @@ public class ParticipacaoMissao {
         return p;
     }
 
-    // ----------------------------------------------------------------
-    // Lifecycle
-    // ----------------------------------------------------------------
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now();

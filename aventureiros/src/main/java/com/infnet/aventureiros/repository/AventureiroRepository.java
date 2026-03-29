@@ -15,7 +15,6 @@ import java.util.Optional;
 @Repository
 public interface AventureiroRepository extends JpaRepository<Aventureiro, Long> {
 
-    /** Listagem com filtros: ativo, classe, nível mínimo — paginável e ordenável. */
     @Query("""
         SELECT new com.infnet.aventureiros.dto.aventureiro.AventureiroResumoDTO(
             a.id, a.nome, a.classe, a.nivel, a.ativo)
@@ -33,7 +32,6 @@ public interface AventureiroRepository extends JpaRepository<Aventureiro, Long> 
         Pageable pageable
     );
 
-    /** Busca textual parcial por nome — paginável. */
     @Query("""
         SELECT new com.infnet.aventureiros.dto.aventureiro.AventureiroResumoDTO(
             a.id, a.nome, a.classe, a.nivel, a.ativo)
@@ -47,7 +45,6 @@ public interface AventureiroRepository extends JpaRepository<Aventureiro, Long> 
         Pageable pageable
     );
 
-    /** Perfil completo com companheiro. */
     @Query("""
         SELECT a FROM Aventureiro a
         LEFT JOIN FETCH a.companheiro
@@ -55,7 +52,6 @@ public interface AventureiroRepository extends JpaRepository<Aventureiro, Long> 
         """)
     Optional<Aventureiro> findByIdWithCompanheiro(@Param("id") Long id);
 
-    /** Conta participações de um aventureiro. */
     @Query("""
         SELECT COUNT(p) FROM ParticipacaoMissao p
         WHERE p.aventureiro.id = :aventureiroId

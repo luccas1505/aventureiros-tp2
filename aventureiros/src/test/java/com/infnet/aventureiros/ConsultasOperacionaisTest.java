@@ -96,7 +96,6 @@ class ConsultasOperacionaisTest {
         p3.setRecompensaOuro(new BigDecimal("100.00"));
         participacaoRepo.save(p3);
 
-        // Garante que tudo foi escrito antes das queries de leitura
         em.flush();
         em.clear();
     }
@@ -280,9 +279,7 @@ class ConsultasOperacionaisTest {
             + " | recompensas: " + r.totalRecompensas()));
     }
 
-    // ----------------------------------------------------------------
-    // Helpers
-    // ----------------------------------------------------------------
+
     private Aventureiro criarAventureiro(String nome, ClasseAventureiro classe,
                                          int nivel, boolean ativo,
                                          Organizacao org, Usuario usuario) {

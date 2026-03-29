@@ -4,9 +4,7 @@ import com.infnet.aventureiros.entity.aventura.ClasseAventureiro;
 
 import java.time.OffsetDateTime;
 
-/**
- * Perfil completo de um aventureiro.
- */
+
 public record AventureiroDetalheDTO(
     Long id,
     String nome,

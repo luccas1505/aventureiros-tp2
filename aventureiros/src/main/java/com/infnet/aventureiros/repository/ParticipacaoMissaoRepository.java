@@ -20,7 +20,6 @@ public interface ParticipacaoMissaoRepository
 
     boolean existsByMissaoIdAndAventureiroId(Long missaoId, Long aventureiroId);
 
-    /** Ranking de aventureiros por participações, recompensas e destaques. */
     @Query("""
         SELECT new com.infnet.aventureiros.dto.relatorio.RankingAventureiroDTO(
             p.aventureiro.id,
@@ -43,7 +42,6 @@ public interface ParticipacaoMissaoRepository
         @Param("statusMissao") StatusMissao statusMissao
     );
 
-    /** Última participação de um aventureiro (para perfil completo). */
     @Query("""
         SELECT p FROM ParticipacaoMissao p
         WHERE p.aventureiro.id = :aventureiroId

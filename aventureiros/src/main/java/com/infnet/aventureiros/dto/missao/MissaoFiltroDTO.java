@@ -7,9 +7,6 @@ import lombok.Setter;
 
 import java.time.OffsetDateTime;
 
-/**
- * Filtros para listagem de missões.
- */
 @Getter
 @Setter
 public class MissaoFiltroDTO {

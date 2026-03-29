@@ -10,11 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Specification para filtros dinâmicos de Missão.
- * Evita o problema de inferência de tipo NULL do PostgreSQL com enums,
- * pois só adiciona predicados para parâmetros não nulos.
- */
+
 public class MissaoSpec {
 
     public static Specification<Missao> comFiltros(
